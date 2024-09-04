@@ -18,6 +18,8 @@ def detection_os():
 def write_log():
     """Writing Log Of Active Response
     """
+    if detection_os is 'Windows':
+        return 
 
 def block_traffic(ip_address):
     """Function To Block Traffic
@@ -48,7 +50,5 @@ if __name__ == '__main__':
 
 
     ip_address = sys.argv[1]
-    port = sys.argv[2]
-    type = sys.argv[3]
 
-    block_traffic(ip_address, port, type)
+    block_traffic(ip_address)
