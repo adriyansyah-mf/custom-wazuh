@@ -2,25 +2,6 @@ import os
 import sys
 
 
-@staticmethod
-def detection_os():
-    """Detection Operation System
-
-    Returns:
-        _str_: Windows|Linux
-    """
-    if os.name == 'nt':
-        return 'Windows'
-    else:
-        return 'Linux'
-
-@staticmethod
-def write_log():
-    """Writing Log Of Active Response
-    """
-    if detection_os is 'Windows':
-        return 
-
 def block_traffic(ip_address):
     """Function To Block Traffic
 
