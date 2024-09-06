@@ -1,33 +1,36 @@
-#!/var/ossec/python/bin/python3
-
-import os
+import subprocess
 import sys
+import logging
 
-def block_traffic(ip_address, port):
-    """Function To Block Traffic
+# Setup logging
+logging.basicConfig(
+    filename="/var/log/block_ip.log",  # Sesuaikan path file log
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
-    Args:
-        ip_address (str): Attacked IP Address
-        port (str): Port number to block (e.g., "22" for SSH)
-    """
+def block_ip(ip, port):
     try:
-        iptables_cmd = f"iptables -A INPUT -s {ip_address} -p tcp --dport {port} -j DROP"
+        # Command untuk menambahkan rule iptables yang memblokir IP pada port tertentu
+        command = f"iptables -I INPUT -s {ip} -p tcp --dport {port} -j DROP"
         
-        os.system(iptables_cmd)
+        # Eksekusi perintah menggunakan subprocess
+        subprocess.run(command, shell=True, check=True)
         
-        print(f"Blocked {ip_address} from accessing port {port}")
-    except Exception as e:
-        print(f"Unknown Error: {str(e)}")
+        # Log keberhasilan
+        logging.info(f"IP {ip} berhasil diblokir pada port {port}")
+        print(f"IP {ip} berhasil diblokir pada port {port}")
+    except subprocess.CalledProcessError as e:
+        # Log kegagalan
+        logging.error(f"Gagal memblokir IP {ip} pada port {port}: {e}")
+        print(f"Gagal memblokir IP {ip} pada port {port}: {e}")
 
-if __name__ == '__main__':
-    """
-    Main function to block IP address passed as argument
-    """
+if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python3 firewall-drop-specific.py <ip_address> <port>")
-        sys.exit()
+        print("Usage: block_ip.py <IP> <PORT>")
+        sys.exit(1)
 
     ip_address = sys.argv[1]
-    port = sys.argv[2]
-
-    block_traffic(ip_address, port)
+    port_number = sys.argv[2]
+    
+    block_ip(ip_address, port_number)
