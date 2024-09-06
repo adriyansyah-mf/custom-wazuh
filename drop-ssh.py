@@ -12,10 +12,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Determine paths based on OS
-if os.name == 'nt':
-    LOG_FILE = "C:\\Program Files (x86)\\ossec-agent\\active-response\\active-responses.log"
-else:
-    LOG_FILE = "/var/ossec/logs/active-responses.log"
+
+LOG_FILE = "/var/ossec/logs/active-responses.log"
 
 HOSTS_FILE = '/etc/hosts.deny'  # Path to hosts.deny file
 
