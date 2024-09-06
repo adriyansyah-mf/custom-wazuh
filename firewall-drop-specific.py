@@ -1,31 +1,33 @@
+#!/var/ossec/python/bin/python3
+
 import os
 import sys
 
-
-def block_traffic(ip_address):
+def block_traffic(ip_address, port):
     """Function To Block Traffic
 
     Args:
         ip_address (str): Attacked IP Address
+        port (str): Port number to block (e.g., "22" for SSH)
     """
-    host_deny_path = '/etc/hosts.deny'
     try:
-        with open(host_deny_path, "a") as f:
-            f.write(f"sshd: {ip_address}\n")  # Add a newline to ensure proper formatting
-
-        print(f"Blocked {ip_address} to access SSH")
+        iptables_cmd = f"iptables -A INPUT -s {ip_address} -p tcp --dport {port} -j DROP"
+        
+        os.system(iptables_cmd)
+        
+        print(f"Blocked {ip_address} from accessing port {port}")
     except Exception as e:
         print(f"Unknown Error: {str(e)}")
-
 
 if __name__ == '__main__':
     """
     Main function to block IP address passed as argument
     """
-    if len(sys.argv) != 2:
-        print("Usage: python3 firewall-drop-specific.py <ip_address>")
+    if len(sys.argv) != 3:
+        print("Usage: python3 firewall-drop-specific.py <ip_address> <port>")
         sys.exit()
 
     ip_address = sys.argv[1]
+    port = sys.argv[2]
 
-    block_traffic(ip_address)
+    block_traffic(ip_address, port)
