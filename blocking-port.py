@@ -33,8 +33,8 @@ def main(argv):
     if '.' in srcip:
         try:
             
-            cmd = f"sudo iptables -A INPUT -s {srcip} -p tcp --destination-port  -j DROP"
-            cmd2 = f"sudo iptables -A FORWARD -s {srcip} -p tcp --destination-port  -j DROP"
+            cmd = f"sudo iptables -A INPUT -s {srcip} -p tcp --destination-port 22 -j DROP\n"
+            cmd2 = f"sudo iptables -A FORWARD -s {srcip} -p tcp --destination-port 22 -j DROP\n"
             subprocess.run(cmd, shell=True, check=True)
             subprocess.run(cmd2, shell=True, check=True)
             write_debug_file(argv[0], f"Blocking IP {srcip}")
@@ -45,8 +45,8 @@ def main(argv):
     elif ':' in srcip:
         try:
             
-            cmd = f"sudo ip6tables -A INPUT -s {srcip} -p tcp --destination-port  -j DROP"
-            cmd2 = f"sudo ip6tables -A FORWARD -s {srcip} -p tcp --destination-port  -j DROP"
+            cmd = f"sudo ip6tables -A INPUT -s {srcip} -p tcp --destination-port 22 -j DROP"
+            cmd2 = f"sudo ip6tables -A FORWARD -s {srcip} -p tcp --destination-port 22 -j DROP"
             subprocess.run(cmd, shell=True, check=True)
             subprocess.run(cmd2, shell=True, check=True)
             write_debug_file(argv[0], f"Blocking IP {srcip}")
@@ -56,6 +56,6 @@ def main(argv):
             write_debug_file(argv[0], str(e))
 
     print("Execution SUccess\n")
-    
+
 if __name__ == "__main__":
     main(sys.argv)

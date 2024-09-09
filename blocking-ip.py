@@ -21,7 +21,8 @@ def main(argv):
     write_debug_file(argv[0], "Starting Engine")
     input_str = ""
     for line in sys.stdin:
-        input_str += line
+        input_str = line
+        break
 
     try:
         data = json.loads(input_str)
@@ -31,9 +32,9 @@ def main(argv):
 
     srcip = data.get('parameters', {}).get('alert', {}).get('data', {}).get('srcip')
     with open("/etc/hosts.deny", "a") as f:
-        f.write(f"sshd: {srcip}")
+        f.write(f"sshd: {srcip}\n")
 
-    
+
 
 if __name__ == "__main__":
     main(sys.argv)
