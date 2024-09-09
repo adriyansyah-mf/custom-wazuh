@@ -2,7 +2,6 @@
 import sys
 import json
 import os
-import subprocess
 import datetime
 from pathlib import PureWindowsPath, PurePosixPath
 
@@ -34,7 +33,7 @@ def main(argv):
     with open("/etc/hosts.deny", "a") as f:
         f.write(f"sshd: {srcip}")
 
-
+    
 
 if __name__ == "__main__":
     main(sys.argv)
