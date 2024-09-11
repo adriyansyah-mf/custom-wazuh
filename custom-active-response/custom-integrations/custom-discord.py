@@ -36,6 +36,22 @@ else:
     # red
     color = "15548997"
 
+try:
+     source_ip = alert_json["data"]["srcip"]
+except KeyError:
+     source_ip = None
+
+try:
+     destination_ip = alert_json["agent"]["ip"]
+except KeyError:
+     destination_ip = None
+
+try:
+     timestamps = alert_json["predecoder"]["timestamp"]
+except KeyError:
+     timestamps = None
+
+
 # agent details
 if "agentless" in alert_json:
 	  agent_ = "agentless"
@@ -54,7 +70,13 @@ payload = json.dumps({
 						"name": "Agent",
 						"value": agent_,
 						"inline": True
-						}]
+						},
+                        {
+                             "name": "Source IP",
+                             "value": source_ip,
+                             "inline": True
+                        }
+                        ]
         }
     ]
 })
