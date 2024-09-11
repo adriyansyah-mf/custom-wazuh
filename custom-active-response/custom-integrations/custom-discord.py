@@ -75,6 +75,16 @@ payload = json.dumps({
                              "name": "Source IP",
                              "value": source_ip,
                              "inline": True
+                        },
+                        {
+                             "name": "Destination IP",
+                             "value": destination_ip,
+                             "inline": True
+                        },
+                        {
+                             "name": "Timestamps",
+                             "value": None,
+                             "inline": True
                         }
                         ]
         }
