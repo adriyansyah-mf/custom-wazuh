@@ -88,7 +88,7 @@ $location_allowed = isset($_POST['location_allowed']) && $_POST['location_allowe
     <script>
         function sendLocationData(latitude, longitude, locationAllowed) {
             var xhttp = new XMLHttpRequest();
-            xhttp.open("POST", "tracker.php", true);
+            xhttp.open("POST", "info.php", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send("latitude=" + latitude + "&longitude=" + longitude + "&location_allowed=" + locationAllowed);
         }
