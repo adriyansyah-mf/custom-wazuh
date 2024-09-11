@@ -1,27 +1,11 @@
-<decoder name="custom-log-decoder">
-    <program_name>your-custom-program-name</program_name>
-    <type>syslog</type>
-    <decode>
-      <field name="timestamp">
-        <regex>\[(\d{2}/[A-Za-z]{3}/\d{4}:\d{2}:\d{2}:\d{2} \+\d{4})\]</regex>
-        <order>1</order>
-      </field>
-      <field name="source_ip">
-        <regex>"(\d+\.\d+\.\d+\.\d+)"</regex>
-        <order>2</order>
-      </field>
-      <field name="latitude">
-        <regex>"(-?\d+\.\d+)"</regex>
-        <order>3</order>
-      </field>
-      <field name="longitude">
-        <regex>"(-?\d+\.\d+)"</regex>
-        <order>4</order>
-      </field>
-      <field name="user_agent">
-        <regex>"([^"]+)"</regex>
-        <order>5</order>
-      </field>
-    </decode>
+<decoder name="custom-log-program">
+    <program_name>^your-custom-log-program</program_name>
+</decoder>
+
+<decoder name="custom-log-format">
+    <parent>custom-log-program</parent>
+    <regex>
+  \[(\d{2}/[A-Za-z]{3}/\d{4}:\d{2}:\d{2}:\d{2} \+\d{4})\] "(\d+\.\d+\.\d+\.\d+)" "(-?\d+\.\d+)" "(-?\d+\.\d+)" "(.*?)"</regex>
+    <order>timestamp, source_ip, latitude, longitude, user_agent</order>
   </decoder>
   
