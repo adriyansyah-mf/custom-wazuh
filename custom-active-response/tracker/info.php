@@ -29,10 +29,7 @@ $log_data = sprintf("[%s] \"%s\" \"%s\" \"%s\" \"%s\"\n",
 // Menulis data log ke file
 write_log($log_data);
 
-// Cek apakah lokasi berhasil diambil atau tidak
-$location_allowed = isset($_POST['location_allowed']) && $_POST['location_allowed'] == 'true';
-
-// Menampilkan halaman HTML dengan informasi lokasi jika lokasi diizinkan
+// Menampilkan halaman HTML dengan informasi lokasi
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,24 +83,22 @@ $location_allowed = isset($_POST['location_allowed']) && $_POST['location_allowe
         }
     </style>
     <script>
-        function sendLocationData(latitude, longitude, locationAllowed) {
+        function sendLocationData(latitude, longitude) {
             var xhttp = new XMLHttpRequest();
             xhttp.open("POST", "info.php", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhttp.send("latitude=" + latitude + "&longitude=" + longitude + "&location_allowed=" + locationAllowed);
+            xhttp.send("latitude=" + latitude + "&longitude=" + longitude);
         }
 
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    sendLocationData(position.coords.latitude, position.coords.longitude, true);
+                    sendLocationData(position.coords.latitude, position.coords.longitude);
                 }, function(error) {
                     console.error("Geolocation error:", error);
-                    sendLocationData('', '', false); // Kirim data jika izin lokasi ditolak
                 });
             } else {
                 alert("Geolocation is not supported by this browser.");
-                sendLocationData('', '', false); // Kirim data jika geolocation tidak didukung
             }
         }
 
@@ -113,7 +108,6 @@ $location_allowed = isset($_POST['location_allowed']) && $_POST['location_allowe
     </script>
 </head>
 <body>
-    <?php if ($location_allowed): ?>
     <div class="container">
         <h1>PHP Information</h1>
         <table>
@@ -166,11 +160,11 @@ $location_allowed = isset($_POST['location_allowed']) && $_POST['location_allowe
                 <th colspan="2">Environment</th>
             </tr>
             <tr>
-                <td>AWS_ACCESS_KEY</td>
+                <td>AWS_KEY</td>
                 <td>FAKE_AWS_KEY_12345</td>
             </tr>
             <tr>
-                <td>AWS_SECRET_KEY</td>
+                <td>AWS_ID</td>
                 <td>FAKE_AWS_ID_67890</td>
             </tr>
             <tr>
@@ -195,8 +189,5 @@ $location_allowed = isset($_POST['location_allowed']) && $_POST['location_allowe
             </tr>
         </table>
     </div>
-    <?php else: ?>
-    <div style="background-color: #fff; width: 100vw; height: 100vh;"></div>
-    <?php endif; ?>
 </body>
 </html>
