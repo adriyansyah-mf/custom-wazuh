@@ -9,7 +9,7 @@ from requests.auth import HTTPBasicAuth
 ossec.conf configuration structure
  <integration>
      <name>custom-discord</name>
-     <hook_url>https://discord.com/api/webhooks/XXXXXXXXXXX</hook_url>
+     <hook_url>https://discord.com/api/webhooks/1147505445339140186/u2cNtmN1OXOXZSnd3W4Zi8e74eKfiykk78kA7W_bZXRqgVbbscfgEttI6FGy9buOxMG3</hook_url>
      <alert_format>json</alert_format>
  </integration>
 """
@@ -26,7 +26,6 @@ with open(alert_file) as f:
 # extract alert fields
 alert_level = alert_json["rule"]["level"]
 
-# colors from https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812
 if(alert_level < 5):
     # green
     color = "5763719"
@@ -36,6 +35,22 @@ elif(alert_level >= 5 and alert_level <= 7):
 else:
     # red
     color = "15548997"
+
+try:
+     source_ip = alert_json["data"]["srcip"]
+except KeyError:
+     source_ip = None
+
+try:
+     destination_ip = alert_json["agent"]["ip"]
+except KeyError:
+     destination_ip = None
+
+try:
+     timestamps = alert_json["predecoder"]["timestamp"]
+except KeyError:
+     timestamps = None
+
 
 # agent details
 if "agentless" in alert_json:
@@ -51,11 +66,28 @@ payload = json.dumps({
 		    "title": f"Wazuh Alert - Rule {alert_json['rule']['id']}",
 				"color": color,
 				"description": alert_json["rule"]["description"],
-				"fields": [{
+				"fields": [
+                        {
 						"name": "Agent",
 						"value": agent_,
 						"inline": True
-						}]
+						},
+                        {
+                             "name": "Source IP",
+                             "value": source_ip,
+                             "inline": True
+                        },
+                        {
+                             "name": "Destination IP",
+                             "value": destination_ip,
+                             "inline": True
+                        },
+                        {
+                             "name": "Timestamps",
+                             "value": None,
+                             "inline": True
+                        }
+                        ]
         }
     ]
 })
