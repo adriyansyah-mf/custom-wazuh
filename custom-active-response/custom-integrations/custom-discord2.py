@@ -1,9 +1,8 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 
 import sys
 import requests
 import json
-from requests.auth import HTTPBasicAuth
 
 """
 ossec.conf configuration structure
@@ -26,10 +25,10 @@ with open(alert_file) as f:
 # extract alert fields
 alert_level = alert_json["rule"]["level"]
 
-if(alert_level < 5):
+if alert_level < 5:
     # green
     color = "5763719"
-elif(alert_level >= 5 and alert_level <= 7):
+elif 5 <= alert_level <= 7:
     # yellow
     color = "16705372"
 else:
@@ -37,24 +36,23 @@ else:
     color = "15548997"
 
 try:
-     source_ip = alert_json["data"]["srcip"]
+    source_ip = alert_json["data"]["srcip"]
 except KeyError:
-     source_ip = None
+    source_ip = "N/A"
 
 try:
-     destination_ip = alert_json["agent"]["ip"]
+    destination_ip = alert_json["agent"]["ip"]
 except KeyError:
-     destination_ip = None
+    destination_ip = "N/A"
 
 try:
-     timestamps = alert_json["predecoder"]["timestamp"]
+    timestamps = alert_json["predecoder"]["timestamp"]
 except KeyError:
-     timestamps = None
-
+    timestamps = "N/A"
 
 # agent details
 if "agentless" in alert_json:
-	  agent_ = "agentless"
+    agent_ = "agentless"
 else:
     agent_ = alert_json["agent"]["name"]
 
@@ -63,35 +61,41 @@ payload = json.dumps({
     "content": "",
     "embeds": [
         {
-		    "title": f"Wazuh Alert - Rule {alert_json['rule']['id']}",
-				"color": color,
-				"description": alert_json["rule"]["description"],
-				"fields": [
-                        {
-						"name": "Agent",
-						"value": agent_,
-						"inline": True
-						},
-                        {
-                             "name": "Source IP",
-                             "value": source_ip,
-                             "inline": True
-                        },
-                        {
-                             "name": "Destination IP",
-                             "value": destination_ip,
-                             "inline": True
-                        },
-                        {
-                             "name": "Timestamps",
-                             "value": None,
-                             "inline": True
-                        }
-                        ]
+            "title": f"Wazuh Alert - Rule {alert_json['rule']['id']}",
+            "color": int(color),  # Convert color to int
+            "description": alert_json["rule"]["description"],
+            "fields": [
+                {
+                    "name": "Agent",
+                    "value": agent_,
+                    "inline": True
+                },
+                {
+                    "name": "Source IP",
+                    "value": source_ip,
+                    "inline": True
+                },
+                {
+                    "name": "Destination IP",
+                    "value": destination_ip,
+                    "inline": True
+                },
+                {
+                    "name": "Timestamps",
+                    "value": timestamps,
+                    "inline": True
+                }
+            ]
         }
     ]
 })
 
 # send message to discord
-r = requests.post(hook_url, data=payload, headers={"content-type": "application/json"})
+try:
+    response = requests.post(hook_url, data=payload, headers={"Content-Type": "application/json"})
+    response.raise_for_status()  # Raise an error for bad HTTP status
+except requests.exceptions.RequestException as e:
+    print(f"Failed to send notification: {e}")
+    sys.exit(1)
+
 sys.exit(0)
