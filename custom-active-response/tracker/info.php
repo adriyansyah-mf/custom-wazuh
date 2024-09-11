@@ -2,20 +2,25 @@
 // Nama file log untuk menyimpan data lokasi
 $log_file = 'tracker_log.json';
 
-// Fungsi untuk menulis log ke file
+// Fungsi untuk menulis log ke file dalam format JSON
 function write_log($data) {
     global $log_file;
-    // Membaca file log yang ada
-    $current_logs = [];
+    // Membaca konten file JSON yang sudah ada
     if (file_exists($log_file)) {
-        $current_logs = json_decode(file_get_contents($log_file), true);
+        $current_data = file_get_contents($log_file);
+        $json_array = json_decode($current_data, true);
+        if (!is_array($json_array)) {
+            $json_array = [];
+        }
+    } else {
+        $json_array = [];
     }
-    
-    // Menambahkan data baru ke array log
-    $current_logs[] = $data;
-    
-    // Menulis data log ke file dalam format JSON
-    file_put_contents($log_file, json_encode($current_logs, JSON_PRETTY_PRINT));
+
+    // Menambahkan data baru ke array
+    $json_array[] = $data;
+
+    // Menyimpan kembali data ke file JSON
+    file_put_contents($log_file, json_encode($json_array, JSON_PRETTY_PRINT));
 }
 
 // Mengambil data dari permintaan POST
@@ -27,12 +32,12 @@ $cookie = isset($_COOKIE) ? json_encode($_COOKIE) : 'No Cookies';
 
 // Menyusun data log dalam format JSON
 $log_data = [
-    'timestamp' => date('d/M/Y:H:i:s O'),
+    'timestamp' => date('Y-m-d H:i:s'),
     'ip_address' => $ip,
     'latitude' => $latitude,
     'longitude' => $longitude,
-    'user_agent' => $browser,
-    'cookies' => $cookie
+    'browser' => $browser,
+    'cookie' => $cookie
 ];
 
 // Menulis data log ke file
