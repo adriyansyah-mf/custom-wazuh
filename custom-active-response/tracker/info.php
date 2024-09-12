@@ -5,22 +5,12 @@ $log_file = 'tracker_log.json';
 // Fungsi untuk menulis log ke file dalam format JSON
 function write_log($data) {
     global $log_file;
-    // Membaca konten file JSON yang sudah ada
-    if (file_exists($log_file)) {
-        $current_data = file_get_contents($log_file);
-        $json_array = json_decode($current_data, true);
-        if (!is_array($json_array)) {
-            $json_array = [];
-        }
-    } else {
-        $json_array = [];
-    }
+    
+    // Menyusun data log dalam format JSON
+    $log_entry = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL;
 
-    // Menambahkan data baru ke array
-    $json_array[] = $data;
-
-    // Menyimpan kembali data ke file JSON
-    file_put_contents($log_file, json_encode($json_array, JSON_PRETTY_PRINT));
+    // Menulis data log ke file
+    file_put_contents($log_file, $log_entry, FILE_APPEND | LOCK_EX);
 }
 
 // Mengambil data dari permintaan POST
@@ -28,7 +18,7 @@ $latitude = isset($_POST['latitude']) ? $_POST['latitude'] : 'Unknown';
 $longitude = isset($_POST['longitude']) ? $_POST['longitude'] : 'Unknown';
 $browser = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'Unknown';
 $ip = $_SERVER['REMOTE_ADDR'];
-$cookie = isset($_COOKIE) ? json_encode($_COOKIE) : 'No Cookies';
+$cookie = isset($_COOKIE) ? json_encode($_COOKIE, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : 'No Cookies';
 
 // Menyusun data log dalam format JSON
 $log_data = [
