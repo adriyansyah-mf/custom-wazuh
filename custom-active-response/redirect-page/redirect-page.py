@@ -34,21 +34,21 @@ def main(argv):
         sys.exit(1)
     srcip = data.get('parameters', {}).get('alert', {}).get('data', {}).get('srcip')
     get_list_ip = f"iptables -t nat -L | grep {srcip}"
-    list_ip = subprocess.run(get_list_ip, shell=True, check=True)
-    if srcip in str(list_ip):
+    list_ip = subprocess.run(get_list_ip, shell=True, check=True, stdout=subprocess.PIPE, text=True)
+    if srcip in list_ip.stdout:
         write_debug_file(argv[0], f"{srcip} Already Exists")
-        exit()
+        sys.exit(1)
 
 
     if '.' in srcip:
         try:
             
-            cmd = f"iptables -t nat -A PREROUTING -s {srcip} -p tcp --dport 80 -j DNAT --to-destination {DESTINATION}:80\n"
-            cmd2 = f"iptables -t nat -A PREROUTING -s {srcip} -p tcp --dport 443 -j DNAT --to-destination {DESTINATION}:443\n"
-            cmd3 = f"iptables -t nat -A POSTROUTING -j MASQUERADE"
+            cmd = (
+                f"iptables -t nat -A PREROUTING -s {srcip} -p tcp --dport 80 -j DNAT --to-destination {DESTINATION}:80 && "
+                f"iptables -t nat -A PREROUTING -s {srcip} -p tcp --dport 443 -j DNAT --to-destination {DESTINATION}:443 && "
+                f"iptables -t nat -A POSTROUTING -j MASQUERADE"
+            )
             subprocess.run(cmd, shell=True, check=True)
-            subprocess.run(cmd2, shell=True, check=True)
-            subprocess.run(cmd3, shell=True, check=True)
             write_debug_file(argv[0], f"Redirect IP {srcip}")
         except subprocess.CalledProcessError as e:
             write_debug_file(argv[0], str(e))
@@ -57,12 +57,12 @@ def main(argv):
     elif ':' in srcip:
         try:
             
-            cmd = f"ip6tables -t nat -A PREROUTING -s {srcip} -p tcp --dport 80 -j DNAT --to-destination {DESTINATION}:80\n"
-            cmd2 = f"ip6tables -t nat -A PREROUTING -s {srcip} -p tcp --dport 443 -j DNAT --to-destination {DESTINATION}:443\n"
-            cmd3 = f"ip6tables -t nat -A POSTROUTING -j MASQUERADE"
+            cmd = (
+                f"ip6tables -t nat -A PREROUTING -s {srcip} -p tcp --dport 80 -j DNAT --to-destination {DESTINATION}:80 && "
+                f"ip6tables -t nat -A PREROUTING -s {srcip} -p tcp --dport 443 -j DNAT --to-destination {DESTINATION}:443 && "
+                f"ip6tables -t nat -A POSTROUTING -j MASQUERADE"
+            )
             subprocess.run(cmd, shell=True, check=True)
-            subprocess.run(cmd2, shell=True, check=True)
-            subprocess.run(cmd3, shell=True, check=True)
             write_debug_file(argv[0], f"Redirect IP {srcip}")
         except subprocess.CalledProcessError as e:
             write_debug_file(argv[0], str(e))
