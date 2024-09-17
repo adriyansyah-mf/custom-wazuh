@@ -33,6 +33,13 @@ def main(argv):
         print(f"Error parsing JSON: {e}")
         sys.exit(1)
     srcip = data.get('parameters', {}).get('alert', {}).get('data', {}).get('srcip')
+    get_list_ip = f"iptables -t nat -L | grep {srcip}"
+    list_ip = subprocess.run(get_list_ip, shell=True, check=True)
+    if srcip in list_ip:
+        write_debug_file(argv[0], f"{srcip} Already Exists")
+        exit()
+
+
     if '.' in srcip:
         try:
             
