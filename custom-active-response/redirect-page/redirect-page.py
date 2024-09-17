@@ -59,7 +59,7 @@ def main(argv):
             
             cmd = f"ip6tables -t nat -A PREROUTING -s {srcip} -p tcp --dport 80 -j DNAT --to-destination {DESTINATION}:80\n"
             cmd2 = f"ip6tables -t nat -A PREROUTING -s {srcip} -p tcp --dport 443 -j DNAT --to-destination {DESTINATION}:443\n"
-            cmd3 = f"iptables -t nat -A POSTROUTING -j MASQUERADE"
+            cmd3 = f"ip6tables -t nat -A POSTROUTING -j MASQUERADE"
             subprocess.run(cmd, shell=True, check=True)
             subprocess.run(cmd2, shell=True, check=True)
             subprocess.run(cmd3, shell=True, check=True)
