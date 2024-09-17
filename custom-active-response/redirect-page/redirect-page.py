@@ -35,7 +35,7 @@ def main(argv):
     srcip = data.get('parameters', {}).get('alert', {}).get('data', {}).get('srcip')
     get_list_ip = f"iptables -t nat -L | grep {srcip}"
     list_ip = subprocess.run(get_list_ip, shell=True, check=True)
-    if srcip in list_ip:
+    if srcip in str(list_ip):
         write_debug_file(argv[0], f"{srcip} Already Exists")
         exit()
 
