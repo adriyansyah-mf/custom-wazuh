@@ -10,7 +10,8 @@ if os.name == 'nt':
     LOG_FILE = "C:\\Program Files (x86)\\ossec-agent\\active-response\\active-responses.log"
 else:
     LOG_FILE = "/var/ossec/logs/active-responses.log"
-
+    
+PATH_HOSTS_DENY = "/etc/hosts.deny"
 def write_debug_file(ar_name, msg):
     with open(LOG_FILE, mode="a") as log_file:
         ar_name_posix = str(PurePosixPath(PureWindowsPath(ar_name[ar_name.find("active-response"):])))
@@ -31,7 +32,12 @@ def main(argv):
         sys.exit(1)
 
     srcip = data.get('parameters', {}).get('alert', {}).get('data', {}).get('srcip')
-    with open("/etc/hosts.deny", "a") as f:
+    with open(PATH_HOSTS_DENY, "r") as f:
+        for line in f:
+            if line.strip().startswith(f"sshd: {srcip}"):
+                exit()
+
+    with open(PATH_HOSTS_DENY, "a") as f:
         f.write(f"sshd: {srcip}\n")
 
 

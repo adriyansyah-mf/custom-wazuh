@@ -7,7 +7,7 @@ import subprocess
 from pathlib import PureWindowsPath, PurePosixPath
 
 
-DESTINATION = "20.200.102.2"
+DESTINATION = "103.204.15.102"
 
 if os.name == 'nt':
     LOG_FILE = "C:\\Program Files (x86)\\ossec-agent\\active-response\\active-responses.log"
@@ -21,7 +21,7 @@ def write_debug_file(ar_name, msg):
 
 def main(argv):
 
-    write_debug_file(argv[0], "Starting Engine")
+    write_debug_file(argv[0], "Starting Tracker Engine")
     input_str = ""
     for line in sys.stdin:
         input_str += line
